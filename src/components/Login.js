@@ -1,15 +1,60 @@
-import React from 'react';
-import styled from 'styled-components';
+import React, { useState } from "react";
+import styled from "styled-components";
+import { useHistory } from "react-router-dom";
+
+const initialValues = { username: "", password: "" };
 
 const Login = () => {
-    
-    return(<ComponentContainer>
+  const history = useHistory();
+  const [formValues, setFormVales] = useState(initialValues);
+  const [error, setError] = useState(null);
+  const handleChanges = (e) => {
+    setError(null);
+    setFormVales({ ...formValues, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    axios
+      .post("http://localhost:5000/api/login", formValues)
+      .then((res) => {
+        window.localStorage.setItem("token", res.data.payload);
+        history.push("/friends");
+      })
+      .catch((err) => setError(err.response.data.error));
+  };
+
+  return (
+    <div>
+      <ComponentContainer>
         <ModalContainer>
-            <h1>Welcome to Blogger Pro</h1>
-            <h2>Please enter your account information.</h2>
+          <h1>Welcome to Blogger Pro</h1>
+          <h2>Please enter your account information.</h2>
         </ModalContainer>
-    </ComponentContainer>);
-}
+      </ComponentContainer>
+      <div data-testid="loginForm" className="login-form">
+        <form onSubmit={handleSubmit}>
+          <label htmlFor="username">Username</label>
+          <input
+            id="username"
+            name="username"
+            value={formValues.username}
+            onChange={handleChanges}
+          />
+          <label htmlFor="password">Password</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            value={formValues.password}
+            onChange={handleChanges}
+          />
+          <button id="submit">Log in</button>
+        </form>
+      </div>
+    </div>
+  );
+};
 
 export default Login;
 
@@ -22,36 +67,36 @@ export default Login;
 //6. MAKE SURE TO ADD id="username", id="password", id="error" AND id="submit" TO THE APPROPRIATE DOM ELEMENTS. YOUR AUTOTESTS WILL FAIL WITHOUT THEM.
 
 const ComponentContainer = styled.div`
-    height: 70%;
-    justify-content: center;
-    align-items: center;
-    display:flex;
-`
+  height: 70%;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+`;
 
 const ModalContainer = styled.div`
-    width: 500px;
-    background: white;
-    padding: 2rem;
-    text-align: center;
-`
+  width: 500px;
+  background: white;
+  padding: 2rem;
+  text-align: center;
+`;
 
 const Label = styled.label`
-    display: block;
-    text-align: left;
-    font-size: 1.5rem;
-`
+  display: block;
+  text-align: left;
+  font-size: 1.5rem;
+`;
 
 const FormGroup = styled.form`
-    padding:1rem;
-`
+  padding: 1rem;
+`;
 
 const Input = styled.input`
-    font-size: 1rem;
-    padding: 1rem 0;
-    width:100%;
-`
+  font-size: 1rem;
+  padding: 1rem 0;
+  width: 100%;
+`;
 
 const Button = styled.button`
-    padding:1rem;
-    width: 100%;
-`
+  padding: 1rem;
+  width: 100%;
+`;
