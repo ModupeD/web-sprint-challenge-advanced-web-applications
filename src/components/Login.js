@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 import styled from "styled-components";
 import { useHistory } from "react-router-dom";
 
@@ -18,8 +19,8 @@ const Login = () => {
     axios
       .post("http://localhost:5000/api/login", formValues)
       .then((res) => {
-        window.localStorage.setItem("token", res.data.payload);
-        history.push("/friends");
+        window.localStorage.setItem("token", res.data.token);
+        history.push("/View");
       })
       .catch((err) => setError(err.response.data.error));
   };
@@ -33,6 +34,11 @@ const Login = () => {
         </ModalContainer>
       </ComponentContainer>
       <div data-testid="loginForm" className="login-form">
+        {error ? (
+          <p id="error" className="error">
+            {error}
+          </p>
+        ) : null}
         <form onSubmit={handleSubmit}>
           <label htmlFor="username">Username</label>
           <input
